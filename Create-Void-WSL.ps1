@@ -33,7 +33,7 @@ If (!(Test-Path -Path C:\WSL\$DistributionName -PathType Container)) {
 
 # Adding the distribution to WSL
 wsl --import $DistributionName C:\WSL\$DistributionName $HOME\Downloads\Void-x86_64-ROOTFS.tar
-wsl --distribution "$DistributionName" --exec bash -c "printf 'UNIX Username: ' ; read unixusername && useradd -G wheel `$unixusername && passwd `$unixusername"
+wsl --distribution "$DistributionName" --exec bash -c "printf 'UNIX Username: ' && read unixusername && useradd -G wheel `$unixusername && passwd `$unixusername"
 
 If ($SetDefault) {
 	wsl --setdefault "$DistributionName"

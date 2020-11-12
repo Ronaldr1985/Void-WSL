@@ -1,6 +1,6 @@
 # Void Linux WSL
 
-A simple PowerShell script to port [Void Linux](https://voidlinux.org/) to WSL.
+A simple PowerShell script to port [Void Linux](https://voidlinux.org/) to WSL. This script was heavly inspired and helped by the [fedora-wsl project](https://github.com/SocMinarch/fedora-wsl)
 
 ## Requirements
 

@@ -1,19 +1,32 @@
-﻿ $TarXZ="~\Downloads\Void-i686-ROOTFS.tar.xz"
-Invoke-WebRequest -Uri https://alpha.de.repo.voidlinux.org/live/current/void-i686-ROOTFS-20191109.tar.xz -OutFile $TarXZ
-cmd /C "C:\Program Files\7-Zip\7z.exe" x Downloads\Void-i686-ROOTFS.tar.xz -o%userprofile%\Downloads
-tar -tf ~\Downloads\Void-i686-ROOTFS.tar | Where-Object { $_ -Like "*/layer.tar" } | ForEach-Object { tar xf ~\Downloads\Void-i686-ROOTFS.tar --strip-components=1 "$_" }
+﻿# Author: Ronald
+# Date: 2020-11-11
 
-If (!(Test-Path -Path C:\WSL\Void -PathType Container)) {
-	New-Item -Path C:\WSL\Void -ItemType Directory
+<#
+.SYNOPSIS
+A script to port Void Linux to WSL
+.DESCRIPTION
+A simple PowerShell script to port Void Linux to WSL, the script uses the ROOTFS tar provided by Void Linux.
+.PARAMETER DistributionName
+What the distro will be called in WSL, by standard it will be called Void
+#>
+
+Param (
+	[String] $DistributionName = "Void"
+)
+
+# Defining variables
+$ROOTFS_URL="https://alpha.de.repo.voidlinux.org/live/current/void-x86_64-ROOTFS-20191109.tar.xz"
+$TarXZ="~\Downloads\Void-x86_64-ROOTFS.tar.xz"
+
+# Downloading the ROOTFS
+Invoke-WebRequest -Uri $ROOTFS_URL -OutFile $TarXZ
+# Extracting the tar.xz file to a .tar file using 7zip
+&"C:\Program Files\7-Zip\7z.exe" x $HOME\Downloads\Void-x86_64-ROOTFS.tar.xz -o%USERPROFILE%\Downloads
+
+If (!(Test-Path -Path C:\WSL\$DistributionName -PathType Container)) {
+	New-Item -Path C:\WSL\$DistributionName -ItemType Directory
 }
 
-wsl --import Void C:\WSL\Void layer.tar
-#wsl -d Fedora-33 -e sed -i 's/enabled=1/enabled=0/g' /etc/yum.repos.d/fedora-updates.repo
-#wsl -d Fedora-33 -e sed -i 's/enabled=1/enabled=0/g' /etc/yum.repos.d/fedora-updates-modular.repo
-#wsl -d Fedora-33 -e dnf -y install sudo passwd cracklib-dicts 'dnf-command(config-manager)'
-#wsl -d Fedora-33 -e dnf config-manager --set-enabled updates --save
-#wsl -d Fedora-33 -e dnf config-manager --set-enabled updates-modular --save
-#
-#wsl -d Fedora-33 -e bash -c "printf 'UNIX Username: ' ; read unixusername ; useradd -G wheel `$unixusername ; passwd `$unixusername"
-#
-#Get-ItemProperty Registry::HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Lxss\*\ DistributionName | Where-Object -Property DistributionName -eq Fedora-33  | Set-ItemProperty -Name DefaultUid -Value 1000
+# Adding the distribution to WSL
+wsl --import $DistributionName C:\WSL\$DistributionName $HOME\Downloads\void-x86_64-ROOTFS-20191109.tar
+wsl --distribution "$DistributionName" --exec bash -c "printf 'UNIX Username: ' ; read unixusername && useradd -G wheel `$unixusername && passwd `$unixusername"

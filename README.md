@@ -4,7 +4,7 @@ A simple PowerShell script to port [Void Linux](https://voidlinux.org/) to WSL. 
 
 ## Requirements
 
-The main requirement of the script is 7zip
+The main requirement of the script is [7zip](https://www.7-zip.org/)
 
 ## Usage
 

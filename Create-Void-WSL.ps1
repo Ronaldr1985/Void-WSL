@@ -28,6 +28,9 @@ If (Test-Path -Path "C:\Program Files\7-Zip\7z.exe" -PathType Leaf) {
 	# Extracting the tar.xz file to a .tar file using 7zip and always override any previous files
 	&"C:\Program Files\7-Zip\7z.exe" x $TarXZ -o"$ExtractTo" -aoa
 }
+ElseIf (Get-Command -Name xz -CommandType Application) {
+	Start-Process -FilePath $Xz -ArgumentList "--decompress --force $TarXz" -NoNewWindow -Wait
+}
 Else {
 	$XzZip = New-TemporaryFile
 	Invoke-WebRequest -Uri https://tukaani.org/xz/xz-5.2.5-windows.zip -OutFile $XzZip

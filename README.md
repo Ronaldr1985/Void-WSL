@@ -4,7 +4,7 @@ A simple PowerShell script to port [Void Linux](https://voidlinux.org/) to WSL. 
 
 ## Requirements
 
-The main requirement of the script is [7zip](https://www.7-zip.org/)
+The only requirement of the script is [WSL 2](https://devblogs.microsoft.com/commandline/announcing-wsl-2/). The script will try and use 7zip to extract the rootfs tarball, if it isn't present, then it will temporarily grab the XZ binary from [here](https://tukaani.org/xz/).
 
 ## Usage
 

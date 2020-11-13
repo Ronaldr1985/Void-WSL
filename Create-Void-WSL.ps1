@@ -54,6 +54,8 @@ If (!(Test-Path -Path C:\WSL\$DistributionName -PathType Container)) {
 wsl --import $DistributionName C:\WSL\$DistributionName $HOME\Downloads\Void-x86_64-ROOTFS.tar
 wsl --distribution "$DistributionName" --exec bash -c "printf 'UNIX Username: ' && read unixusername && useradd -G wheel `$unixusername && passwd `$unixusername"
 
+Get-ItemProperty Registry::HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Lxss\*\ DistributionName | Where-Object -Property DistributionName -eq "$DistributionName" | Set-ItemProperty -Name DefaultUid -Value 1000
+
 If ($SetDefault) {
 	wsl --setdefault "$DistributionName"
 }

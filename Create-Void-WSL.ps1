@@ -29,7 +29,7 @@ If (Test-Path -Path "C:\Program Files\7-Zip\7z.exe" -PathType Leaf) {
 	&"C:\Program Files\7-Zip\7z.exe" x $TarXZ -o"$ExtractTo" -aoa
 }
 ElseIf (Get-Command -Name xz -CommandType Application) {
-	Start-Process -FilePath $Xz -ArgumentList "--decompress --force $TarXz" -NoNewWindow -Wait
+	Start-Process -FilePath xz.exe -ArgumentList "--decompress --force $TarXz" -NoNewWindow -Wait
 }
 Else {
 	$XzZip = New-TemporaryFile

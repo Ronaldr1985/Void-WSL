@@ -1,5 +1,5 @@
 ﻿# Author: Ronald
-# Date: 2020-11-11
+# Date: 2020-11-13
 
 <#
 .SYNOPSIS
@@ -24,8 +24,27 @@ $ExtractTo="$HOME\Downloads"
 
 # Downloading the ROOTFS
 Invoke-WebRequest -Uri $ROOTFS_URL -OutFile $TarXZ
-# Extracting the tar.xz file to a .tar file using 7zip and always override any previous files
-&"C:\Program Files\7-Zip\7z.exe" x $TarXZ -o"$ExtractTo" -aoa
+If (Test-Path -Path "C:\Program Files\7-Zip\7z.exe" -PathType Leaf) {
+	# Extracting the tar.xz file to a .tar file using 7zip and always override any previous files
+	&"C:\Program Files\7-Zip\7z.exe" x $TarXZ -o"$ExtractTo" -aoa
+}
+ElseIf (Get-Command -Name xz -CommandType Application) {
+	Start-Process -FilePath xz.exe -ArgumentList "--decompress --force $TarXz" -NoNewWindow -Wait
+}
+Else {
+	$XzZip = New-TemporaryFile
+	Invoke-WebRequest -Uri https://tukaani.org/xz/xz-5.2.5-windows.zip -OutFile $XzZip
+
+	Add-Type -AssemblyName System.IO.Compression.FileSystem
+	$XzZipFile = [System.IO.Compression.ZipFile]::OpenRead($XzZip)
+
+	$Xz = New-TemporaryFile
+	[System.IO.Compression.ZipFileExtensions]::ExtractToFile($XzZipFile.GetEntry("bin_x86-64/xz.exe"), $Xz, $True)
+	$XzZipFile.Dispose()
+
+	Start-Process -FilePath $Xz -ArgumentList "--decompress --force $TarXz" -NoNewWindow -Wait
+	$XzZip, $Xz | Remove-Item
+}
 
 If (!(Test-Path -Path C:\WSL\$DistributionName -PathType Container)) {
 	New-Item -Path C:\WSL\$DistributionName -ItemType Directory

@@ -53,6 +53,8 @@ If (!(Test-Path -Path C:\WSL\$DistributionName -PathType Container)) {
 # Adding the distribution to WSL
 wsl --import $DistributionName C:\WSL\$DistributionName $HOME\Downloads\Void-x86_64-ROOTFS.tar
 wsl --distribution "$DistributionName" --exec bash -c "printf 'UNIX Username: ' && read unixusername && useradd -G wheel `$unixusername && passwd `$unixusername"
+# Bash command to uncomment wheel group from sudoers
+#   tmpfile=$(echo $((1 + RANDOM % 10))) && correctline=$(grep $'%wheel\tALL=(ALL)\tALL' /etc/sudoers | sed s/#\ //g ) && (awk -v correctLine="$correctline" '{ if (NR == 107) print correctLine; else print $0}' /etc/sudoers ) > /tmp/$tmpfile && (yes | cp -f /tmp/$tmpfile /etc/sudoers) && rm -rf /tmp/$tmpfile
 
 Get-ItemProperty Registry::HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Lxss\*\ DistributionName | Where-Object -Property DistributionName -eq "$DistributionName" | Set-ItemProperty -Name DefaultUid -Value 1000
 

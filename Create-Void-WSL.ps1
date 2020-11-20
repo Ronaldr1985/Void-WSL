@@ -52,6 +52,8 @@ If (!(Test-Path -Path C:\WSL\$DistributionName -PathType Container)) {
 
 Clear-Host # Clear the screen 
 
+
+# Need to add  sudo xbps-reconfigure -f glibc-locales and local shit from here: https://wiki.voidlinux.org/Frequently_Asked_Questions#..._do_I_set_up_my_locale.3f
 # Adding the distribution to WSL
 wsl --import $DistributionName C:\WSL\$DistributionName $HOME\Downloads\Void-x86_64-ROOTFS.tar
 wsl --distribution "$DistributionName" --exec bash -c "printf '\nSetting the root password: \n' && passwd" # Setting the root password 

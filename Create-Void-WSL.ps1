@@ -50,11 +50,16 @@ If (!(Test-Path -Path C:\WSL\$DistributionName -PathType Container)) {
 	New-Item -Path C:\WSL\$DistributionName -ItemType Directory
 }
 
+Clear-Host # Clear the screen 
+
 # Adding the distribution to WSL
 wsl --import $DistributionName C:\WSL\$DistributionName $HOME\Downloads\Void-x86_64-ROOTFS.tar
-wsl --distribution "$DistributionName" --exec bash -c "printf 'UNIX Username: ' && read unixusername && useradd -G wheel `$unixusername && passwd `$unixusername"
-# Bash command to uncomment wheel group from sudoers
-#   tmpfile=$(echo $((1 + RANDOM % 10))) && correctline=$(grep $'%wheel\tALL=(ALL)\tALL' /etc/sudoers | sed s/#\ //g ) && (awk -v correctLine="$correctline" '{ if (NR == 107) print correctLine; else print $0}' /etc/sudoers ) > /tmp/$tmpfile && (yes | cp -f /tmp/$tmpfile /etc/sudoers) && rm -rf /tmp/$tmpfile
+wsl --distribution "$DistributionName" --exec bash -c "printf 'Setting the root password: \n' && passwd && chsh -s /bin/bash" # Setting the root password and set the default shell to bash
+wsl --distribution "$DistributionName" --exec bash -c "printf 'UNIX Username: \n' && read unixusername && useradd -G wheel `$unixusername && passwd `$unixusername" # Create a user
+wsl --distribution "$DistributionName" --exec bash -c "xbps-install -Syu" # Run updates
+wsl --distribution "$DistributionName" --exec bash -c "xbps-install -Sy wget" # Install wget
+wsl --distribution "$DistributionName" --exec bash -c "wget https://raw.githubusercontent.com/Ronaldr1985/Void-WSL/master/other/uncommentWheel.sh && chmod +x uncommentWheel.sh && bash uncommentWheel.sh" # Download script to uncomment wheel group from sudoers
+Remove-Item uncommentWheel.sh # Remove the script that we downloaded
 
 Get-ItemProperty Registry::HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Lxss\*\ DistributionName | Where-Object -Property DistributionName -eq "$DistributionName" | Set-ItemProperty -Name DefaultUid -Value 1000
 

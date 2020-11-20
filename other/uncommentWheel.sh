@@ -1,3 +1,6 @@
+#!/bin/bash
+
+
 # Bash command to uncomment wheel group from sudoers
 tmpfile=$(echo $((1 + RANDOM % 10))) && \
 correctline=$(grep $'%wheel\tALL=(ALL)\tALL' /etc/sudoers | sed s/#\ //g ) && \

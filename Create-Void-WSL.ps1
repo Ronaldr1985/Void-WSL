@@ -54,7 +54,8 @@ Clear-Host # Clear the screen
 
 # Adding the distribution to WSL
 wsl --import $DistributionName C:\WSL\$DistributionName $HOME\Downloads\Void-x86_64-ROOTFS.tar
-wsl --distribution "$DistributionName" --exec bash -c "printf 'Setting the root password: \n' && passwd && chsh -s /bin/bash" # Setting the root password and set the default shell to bash
+wsl --distribution "$DistributionName" --exec bash -c "printf '\nSetting the root password: \n' && passwd" # Setting the root password 
+wsl --distribution "$DistributionName" --exec bash -c "chsh -s /bin/bash" # Set the default shell for the root user to bash
 wsl --distribution "$DistributionName" --exec bash -c "printf 'UNIX Username: \n' && read unixusername && useradd -G wheel `$unixusername && passwd `$unixusername" # Create a user
 wsl --distribution "$DistributionName" --exec bash -c "xbps-install -Syu" # Run updates
 wsl --distribution "$DistributionName" --exec bash -c "xbps-install -Sy wget" # Install wget
@@ -66,3 +67,8 @@ Get-ItemProperty Registry::HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentV
 If ($SetDefault) {
 	wsl --setdefault "$DistributionName"
 }
+
+# Clear the screen again
+Clear-Host
+
+Write-Output "Providing that there were no errors the system should be up and running"

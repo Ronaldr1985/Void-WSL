@@ -56,14 +56,24 @@ Clear-Host # Clear the screen
 # Need to add  sudo xbps-reconfigure -f glibc-locales and local shit from here: https://wiki.voidlinux.org/Frequently_Asked_Questions#..._do_I_set_up_my_locale.3f
 # Adding the distribution to WSL
 wsl --import $DistributionName C:\WSL\$DistributionName $HOME\Downloads\Void-x86_64-ROOTFS.tar
+
+# Setting up the root user
 wsl --distribution "$DistributionName" --exec bash -c "printf '\nSetting the root password: \n' && passwd" # Setting the root password 
 wsl --distribution "$DistributionName" --exec bash -c "chsh -s /bin/bash" # Set the default shell for the root user to bash
-wsl --distribution "$DistributionName" --exec bash -c "printf 'UNIX Username: \n' && read unixusername && useradd -G wheel `$unixusername && passwd `$unixusername" # Create a user
-wsl --distribution "$DistributionName" --exec bash -c "xbps-install -Syu" # Run updates
-wsl --distribution "$DistributionName" --exec bash -c "xbps-install -Sy wget" # Install wget
-wsl --distribution "$DistributionName" --exec bash -c "wget https://raw.githubusercontent.com/Ronaldr1985/Void-WSL/master/other/uncommentWheel.sh && chmod +x uncommentWheel.sh && bash uncommentWheel.sh" # Download script to uncomment wheel group from sudoers
-Remove-Item uncommentWheel.sh # Remove the script that we downloaded
 
+# XBPS stuff
+wsl --distribution "$DistributionName" --exec bash -c "xbps-install -Syu" # Run updates
+wsl --distribution "$DistributionName" --exec bash -c "xbps-install -Sy curl" # Install curl
+
+# Setting up sudo
+wsl --distribution "$DistributionName" --exec bash -c "curl https://raw.githubusercontent.com/Ronaldr1985/Void-WSL/master/other/uncommentWheel.sh | bash" # Download the uncommentWheel script and then pass it to bash
+
+# Timzone and Locale
+wsl --distribution "$DistributionName" --exec bash -c "echo "LANG=en_GB.UTF-8" > /etc/locale.conf && xbps-reconfigure -f glibc-locales" # Set the locale
+wsl --distribution "$DistributionName" --exec bash -c "echo 'TIMEZONE="Europe/London"' >> /etc/rc.conf" # Set the timezone
+
+# Create the user and set it as the default user
+wsl --distribution "$DistributionName" --exec bash -c "printf 'UNIX Username: \n' && read unixusername && useradd -G wheel `$unixusername && passwd `$unixusername" # Create a user
 Get-ItemProperty Registry::HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Lxss\*\ DistributionName | Where-Object -Property DistributionName -eq "$DistributionName" | Set-ItemProperty -Name DefaultUid -Value 1000
 
 If ($SetDefault) {
